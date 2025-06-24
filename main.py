@@ -69,6 +69,7 @@ def send_profit_screenshot():
     send_image("profit_example.jpg", "📸 Profit obținut la TP2 cu lot 1.00")
 
 if __name__ == "__main__":
+    send_message("🔄 Test manual – botul funcționează și trimite mesaje!")
     send_morning_message()
     time.sleep(random.randint(5, 15))
     send_signal()
