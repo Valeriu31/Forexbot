@@ -38,10 +38,7 @@ def generate_signal():
     return entry, tp1, tp2, sl
 
 def send_morning_message():
-    send_message("🌞 Bună dimineața, traderi!
-
-💎 Începem ziua cu încredere și disciplină. Semnalele de astăzi vor fi reale și analizate atent.
-📊 Fii pregătit pentru profit! #VIPForex")
+    send_message("🌞 Bună dimineața, traderi! 💎 Începem ziua cu încredere și disciplină.")
 
 def send_signal():
     if not is_market_stable():
