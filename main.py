@@ -30,7 +30,7 @@ def send_image(photo_path, caption=""):
         requests.post(url, data=payload, files=files)
 
 def send_morning_message():
-    send_message("🌞 Bună dimineața, traderi!
+    send_message("🌞 Bună dimineața, traderi!"
 
 💎 Începem ziua cu încredere și disciplină. Semnalele de astăzi vor fi reale și analizate atent.
 📊 Fii pregătit pentru profit! #VIPForex")
