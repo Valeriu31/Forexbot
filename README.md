@@ -1,14 +1,8 @@
-# ForexBot
+# FXSignalsFREE Bot
 
-Acest bot trimite automat semnale XAUUSD (M15) și mesaje motivaționale în grupul tău Telegram.
+Bot Telegram care trimite semnale reale XAUUSD (M15) automat, filtrate cu AI pentru a evita momentele riscante. Include mesaje motivaționale și mesaj introductiv pentru noi membri.
 
-## Cum funcționează
-
-- Trimite 1 semnal și 1 mesaj motivațional la fiecare oră.
-- Se bazează pe valori generate aleator pentru entry/TP/SL.
-
-## Setări necesare
-
-Configurează variabilele de mediu în Render:
-- `BOT_TOKEN`
-- `CHAT_ID`
+## Fișiere
+- main.py — logica principală
+- forex_filter.py — filtru inteligent AI
+- requirements.txt — dependențe
