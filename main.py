@@ -67,11 +67,7 @@ if __name__ == "__main__":
     now = datetime.now()
     if now.hour == 7:
         send_morning_message()
-    time.sleep(5)
+        
+while True:
     send_signal()
-    time.sleep(5)
-    send_tp1_notification()
-    time.sleep(5)
-    send_profit_screenshot()
-    time.sleep(5)
-    send_sl_notification()
+    time.sleep(random.randint(600, 1800))  # sau orice interval vrei
