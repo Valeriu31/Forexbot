@@ -1,8 +1,9 @@
-
 import os
 import time
+import random
 import requests
 from datetime import datetime
+from forex_filter import is_market_stable
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
@@ -29,6 +30,13 @@ def send_image(photo_path, caption=""):
         }
         requests.post(url, data=payload, files=files)
 
+def generate_signal():
+    entry = round(random.uniform(2320, 2360), 2)
+    tp1 = round(entry + random.uniform(2, 4), 2)
+    tp2 = round(tp1 + random.uniform(2, 4), 2)
+    sl = round(entry - random.uniform(5, 8), 2)
+    return entry, tp1, tp2, sl
+
 def send_morning_message():
     send_message("🌞 Bună dimineața, traderi!
 
@@ -36,15 +44,19 @@ def send_morning_message():
 📊 Fii pregătit pentru profit! #VIPForex")
 
 def send_signal():
-    signal = "📢 <b>Semnal XAUUSD (M15)</b>
+    if not is_market_stable():
+        return
+    entry, tp1, tp2, sl = generate_signal()
+    signal = "<b>Semnal XAUUSD (M15)</b>
 
-🔹 Tip: SELL
-🔹 Entry: 2333.50
-🎯 TP1: 2330.00
-🎯 TP2: 2325.00
-🛑 SL: 2337.00
+🟢 BUY @ {}
+🎯 TP1: {}
+🎯 TP2: {}
+❌ SL: {}
+⏰ {}
 
-💡 Admin: 'Pentru protejarea capitalului, setați BE la TP1!'"
+#gold #forex #xauusd".format(
+        entry, tp1, tp2, sl, datetime.now().strftime('%H:%M %d/%m'))
     send_message(signal)
 
 def send_tp1_notification():
@@ -57,15 +69,14 @@ def send_profit_screenshot():
     send_image("profit_example.jpg", "📸 Profit obținut la TP2 cu lot 1.00")
 
 if __name__ == "__main__":
-    now = datetime.now()
-    if now.hour == 7:
-        send_morning_message()
-    time.sleep(5)
+    send_morning_message()
+    time.sleep(random.randint(5, 15))
     send_signal()
-    time.sleep(5)
+    time.sleep(random.randint(5, 15))
     send_tp1_notification()
-    time.sleep(5)
+    time.sleep(random.randint(5, 15))
     send_profit_screenshot()
-    time.sleep(5)
+    time.sleep(random.randint(5, 15))
     send_sl_notification()
+
 
