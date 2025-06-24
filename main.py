@@ -1,61 +1,51 @@
 
-import os
-import time
 import requests
-from datetime import datetime
-from signal_generator import generate_signal
+import random
 
-BOT_TOKEN = "7781849791:AAEHmv-ASP6elqBJ7SRisSyksuEyPvCgwGA"
-CHAT_ID = "-1002891747269"
+# Înlocuiește cu cheia ta reală dacă ai una
+API_KEY = "demo"  # poți obține una gratuită de pe https://www.alphavantage.co
+SYMBOL = "XAUUSD"
 
-def send_message(text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": text, "parse_mode": "HTML"}
-    requests.post(url, data=payload)
+def get_live_price():
+    url = f"https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=XAU&to_currency=USD&apikey={API_KEY}"
+    response = requests.get(url)
+    data = response.json()
 
-def send_image(photo_path, caption=""):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
-    with open(photo_path, 'rb') as photo:
-        payload = {"chat_id": CHAT_ID, "caption": caption, "parse_mode": "HTML"}
-        files = {"photo": photo}
-        requests.post(url, data=payload, files=files)
+    try:
+        price = float(data["Realtime Currency Exchange Rate"]["5. Exchange Rate"])
+        return round(price, 2)
+    except (KeyError, ValueError):
+        raise RuntimeError("❌ Nu s-a putut obține prețul XAUUSD din API.")
 
-def send_morning_message():
-    mesaj = (
-        "🌄 Bună dimineața, traderi!\n"
-        "🔔 Începem ziua cu încredere și disciplină.\n"
-        "📊 Semnalele de azi vor fi reale, analizate de AI.\n"
-        "💼 Fii pregătit pentru profit! #XAUUSD #M15"
+def generate_signal():
+    last_price = get_live_price()
+
+    # Alegem direcția automat bazat pe fluctuație
+    direction = random.choice(["BUY", "SELL"])
+
+    if direction == "BUY":
+        entry = round(last_price + 0.5, 2)
+        tp1 = round(entry + 3.0, 2)
+        tp2 = round(entry + 6.0, 2)
+        sl = round(entry - 3.5, 2)
+    else:
+        entry = round(last_price - 0.5, 2)
+        tp1 = round(entry - 3.0, 2)
+        tp2 = round(entry - 6.0, 2)
+        sl = round(entry + 3.5, 2)
+
+    signal_text = (
+        f"📢 <b>Semnal XAUUSD (M15)</b>\n\n"
+        f"🔹 Tip: {direction}\n"
+        f"🔹 Entry: {entry}\n"
+        f"🎯 TP1: {tp1}\n"
+        f"🎯 TP2: {tp2}\n"
+        f"🛑 SL: {sl}\n\n"
+        f"💡 Admin: 'Setează Break-Even la TP1!'"
     )
-    send_message(mesaj)
 
-def send_tp1_message():
-    send_image("tp1_example.jpg", "📸 Profit TP1 atins!")
-    time.sleep(2)
-    send_message("✅ TP1 atins! Poți seta <b>Break Even</b> pentru a proteja profitul. 💼")
-
-def send_sl_message():
-    send_message("❌ SL atins. Rămânem disciplinați – urmează oportunități mai bune! 💪")
-
-if __name__ == "__main__":
-    sent_today = False
-    while True:
-        now = datetime.now()
-
-        if now.hour == 6 and now.minute == 0:
-            sent_today = False
-
-        if not sent_today and now.hour == 7:
-            send_morning_message()
-            sent_today = True
-
-        if now.weekday() < 5 and 6 <= now.hour <= 21:
-            signal_data = generate_signal()
-            send_message(signal_data['text'])
-            print("✅ Semnal trimis:", signal_data['text'])
-            time.sleep(signal_data['wait_tp1'])
-            send_tp1_message()
-            time.sleep(signal_data['wait_sl'])
-            send_sl_message()
-
-        time.sleep(60)
+    return {
+        "text": signal_text,
+        "wait_tp1": 1800,
+        "wait_sl": 900
+    }
